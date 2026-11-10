@@ -1,0 +1,26 @@
+# Runs the Event Timers HUD tests and typecheck on every push and pull request.
+# GitHub can't build the mod itself: compiling needs CSDK (Valve's tools, Windows, Steam) and the
+# game's own hud.xml, neither of which can live in this repo. Releases are built on your PC with
+# tools\release.ps1, which uploads the zip to GitHub Releases.
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  hud-event-timers:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mods/hud-event-timers/source
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: mods/hud-event-timers/source/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test

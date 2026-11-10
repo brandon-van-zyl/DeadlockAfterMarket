@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Event Timers Preview</title>
+<style>
+  :root {
+    --bg: #0e1014;
+    --bar: #171a20;
+    --line: #2a2f38;
+    --text: #e8e6e3;
+    --muted: #9aa0a8;
+    --accent: #f2c14e;
+    --danger: #ff6b5b;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 14px/1.4 system-ui, "Segoe UI", sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+  #bar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px;
+    padding: 10px 16px; background: var(--bar); border-bottom: 1px solid var(--line);
+  }
+  #bar .group { display: flex; align-items: center; gap: 6px; }
+  #clock { font: 600 22px/1 ui-monospace, Consolas, monospace; min-width: 4.5ch; text-align: right; }
+  button, input[type="text"] {
+    font: inherit; color: var(--text); background: #232831; border: 1px solid var(--line);
+    border-radius: 6px; padding: 5px 10px;
+  }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--muted); }
+  button[aria-pressed="true"] { background: var(--accent); color: #111; border-color: var(--accent); }
+  #play { min-width: 5.5em; font-weight: 600; }
+  #slider { width: min(360px, 40vw); accent-color: var(--accent); }
+  #jump { width: 5.5em; }
+  #souls { width: 6em; }
+  .muted { color: var(--muted); font-size: 12px; }
+  #PreviewFakeShop { display: none; }
+  select { font: inherit; color: var(--text); background: #232831; border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; }
+
+  /* Fake minimap (bottom-left). Children overlap like Panorama panels; z-index like the game's. */
+  /* Bottom-right like the game's #minimap_persp; the map size setting grows it up and left. */
+  #hud .PreviewMinimapFrame { right: 24px; bottom: 24px; width: 300px; height: 300px; overflow: hidden;
+    border-radius: 50%; background: #0b0f14; transform-origin: 100% 100%; }
+  #hud .PreviewMinimapFrame .Panel, #hud .PreviewMinimapFrame .PreviewPip { position: absolute; left: 0; top: 0; }
+  #hud .PreviewMinimapZoom, #hud .PreviewMinimapHost { width: 100%; height: 100%; }
+  /* Like the game: map picture, markers and icons are siblings; later ones draw on top. */
+  #hud .PreviewMapLayer, #hud #DAMapMarkers, #hud .PreviewPips { z-index: 0; }
+  #hud .PreviewMapLayer { width: 100%; height: 100%;
+    background: /* MINIMAP */ radial-gradient(circle at 50% 50%, #2a3a2e 0 12%, transparent 13%),
+      linear-gradient(45deg, transparent 47%, #5a5340 47% 53%, transparent 53%),
+      linear-gradient(-45deg, transparent 47%, #5a5340 47% 53%, transparent 53%),
+      linear-gradient(90deg, transparent 47%, #5a5340 47% 53%, transparent 53%),
+      #1b2620; background-size: cover; }
+  #hud .PreviewMinimapHost { isolation: isolate; } /* z-index stacks inside the minimap, like Panorama */
+  #hud .PreviewMinimapFrame.Placing .PreviewMapLayer { cursor: crosshair; outline: 2px dashed #f2c14e; outline-offset: -2px; }
+  #hud .PreviewPips { width: 100%; height: 100%; pointer-events: none; }
+  #hud .PreviewPip { width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; border: 2px solid #000; }
+  #hud .PreviewPip.enemy { background: #e2463a; }
+  #hud .PreviewPip.ally { background: #3fbf6a; }
+  #hud #DAMapMarkers { pointer-events: none; }
+  label { color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  #note { color: var(--muted); font-size: 12px; padding: 6px 16px; border-bottom: 1px solid var(--line); }
+  #note code { color: var(--text); }
+  #error { background: #3a1512; color: #ffb4ab; padding: 8px 16px; border-bottom: 1px solid #5c211c; }
+  #stage { flex: 1; min-height: 0; position: relative; overflow: hidden; display: grid; place-items: center; }
+
+  /* The game HUD at 1920x1080, scaled to fit. */
+  #hud {
+    position: absolute; left: 50%; top: 50%;
+    width: 1920px; height: 1080px; margin: -540px 0 0 -960px;
+    overflow: hidden; color: #fff;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: radial-gradient(ellipse at 50% 40%, #2a3340 0%, #12161c 70%);
+    /* BACKGROUND */
+  }
+  #hud > * { position: absolute; }
+  #hud .Label { white-space: nowrap; }
+  #hud .Panel, #hud .Label { box-sizing: content-box; }
+  #placeholder {
+    inset: 0; display: grid; place-items: center; color: #ffffff40; font-size: 28px; text-align: center;
+  }
+  #PreviewGameTime { display: none; }
+  @media (max-width: 600px) { #bar { gap: 8px; } #slider { width: 100%; } }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/panel.css">
+</head>
+<body>
+  <div id="bar">
+    <div class="group">
+      <span id="clock">0:00</span>
+      <button id="play" type="button" title="Space">Play</button>
+    </div>
+    <div class="group" role="group" aria-label="Speed">
+      <button type="button" data-speed="1">1x</button>
+      <button type="button" data-speed="10">10x</button>
+      <button type="button" data-speed="60">60x</button>
+    </div>
+    <input id="slider" type="range" min="0" max="2700" step="1" aria-label="Match clock">
+    <form id="jumpForm" class="group">
+      <input id="jump" type="text" placeholder="4:28" aria-label="Jump to time (m:ss)">
+      <button type="submit">Go</button>
+    </form>
+    <button id="nextWarn" type="button">Next warning</button>
+    <label><input id="pauseOnBanner" type="checkbox"> Pause on banner when fast</label>
+    <label title="Off = the hideout, where a clock runs but the mod should stay hidden"><input id="inMatch" type="checkbox"> In a match</label>    <div class="group" role="group" aria-label="Fake shop">
+      <label for="souls">Souls</label>
+      <input id="souls" type="text" inputmode="numeric" aria-label="Current souls">
+      <button id="addSouls" type="button">+500</button>
+      <button id="buyNext" type="button">Buy next</button>
+      <span id="queueInfo" class="muted"></span>
+    </div>
+    <div class="group" role="group" aria-label="Fake minimap">
+      <span class="muted">Minimap:</span>
+      <label><input id="mapOtherTeam" type="checkbox"> Other team side</label>
+      <label><input id="mapZoom" type="checkbox"> Zoomed</label>
+      <label><input id="mapPlace" type="checkbox"> Place markers</label>
+      <select id="mapKind" aria-label="Marker kind"></select>
+      <button id="mapCopy" type="button">Copy markers</button>
+      <button id="mapClear" type="button">Reset draft</button>
+      <span id="mapStatus" class="muted"></span>
+    </div>
+  </div>
+  <div id="note">
+    The real mod script and <code>events.json</code> drive this page. Styles come from
+    <code>event_timers.css</code>, converted from Panorama CSS, so fonts and spacing are approximate.
+    Check the final look in a bot match. <!-- BGINFO -->
+  </div>
+  <div id="error" hidden></div>
+  <div id="stage">
+    <div id="hud">
+      <!-- PLACEHOLDER -->
+      <div class="Label GameTime" id="PreviewGameTime"></div>
+      <div class="Panel" id="PreviewFakeShop"></div>
+      <div class="Panel" id="ScriptContext"></div>
+      <!-- SNIPPET -->
+    </div>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

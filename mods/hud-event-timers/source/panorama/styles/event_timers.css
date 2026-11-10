@@ -1,0 +1,505 @@
+/*
+  Event Timers HUD, styled to match Deadlock's own HUD (taken from the game's stylesheets,
+  Nov 2026 build):
+  - panels like the match clock (.GameClock): #00000090, world-blur gaussian(2,2,2), 5px radius
+  - fonts from citadel_base_styles: Radiance (sans), VALVEPulp (block, titles/numbers)
+  - colours: offWhite #FFEFD7, goldColor #FFED79, warningRed #EE5945, shardColor #99FFD6 (souls),
+    deadlockGreen #69E799, offBlack #10130D
+  - the banner copies the game's announcements: block font, uppercase, rotateZ(-4deg), shadow
+  Literal values, not the game's @define names, so this file works on its own.
+
+  Panorama CSS is a subset of web CSS: no flexbox (use flow-children), and gradients use
+  Valve's gradient( linear, ... ) syntax.
+*/
+
+/* ---------- Timer panel ---------- */
+
+#DATimers
+{
+	horizontal-align: right;
+	vertical-align: top;
+	margin-top: 176px;
+	margin-right: 16px;
+	width: 270px;
+	flow-children: down;
+	padding: 8px 12px 10px 12px;
+	background-color: #00000090;
+	world-blur: gaussian( 2, 2, 2 );
+	border-radius: 5px;
+	opacity: 1;
+	transition-property: opacity;
+	transition-duration: 0.2s;
+}
+
+#DATimers.Hidden
+{
+	opacity: 0;
+}
+
+#DATimersHeader
+{
+	width: 100%;
+	flow-children: right;
+	margin-bottom: 4px;
+}
+
+#DATimersTitle
+{
+	width: fill-parent-flow(1.0);
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #FFEFD799;
+	vertical-align: center;
+}
+
+#DAOptionsButton Label
+{
+	font-size: 10px;
+}
+
+.DATimersRow
+{
+	width: 100%;
+	flow-children: right;
+	margin-top: 2px;
+}
+
+.DATimersRow.Hidden
+{
+	visibility: collapse;
+}
+
+.DATimersName
+{
+	width: fill-parent-flow(1.0);
+	font-family: Radiance, Noto Sans, sans-serif;
+	font-size: 15px;
+	font-weight: semi-bold;
+	color: #FFEFD7e6;
+	text-overflow: ellipsis;
+	vertical-align: center;
+}
+
+.DATimersTime
+{
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 15px;
+	font-weight: semi-bold;
+	color: #FFEFD7e6;
+	horizontal-align: right;
+	vertical-align: center;
+	margin-left: 10px;
+}
+
+.DATimersRow.Soon .DATimersName,
+.DATimersRow.Soon .DATimersTime
+{
+	color: #FFED79;
+}
+
+.DATimersRow.Now .DATimersName,
+.DATimersRow.Now .DATimersTime
+{
+	color: #EE5945;
+}
+
+/* ---------- Shared look for the small one-line chips (wave, next item, hidden) ---------- */
+
+#DAWave,
+#DANextItem,
+#DAToggle
+{
+	horizontal-align: right;
+	vertical-align: top;
+	margin-right: 16px;
+	flow-children: right;
+	padding: 3px 10px 3px 10px;
+	background-color: #00000090;
+	world-blur: gaussian( 2, 2, 2 );
+	border-radius: 5px;
+	transition-property: opacity;
+	transition-duration: 0.2s;
+}
+
+/* ---------- Trooper wave countdown: one quiet line above the panel ---------- */
+
+#DAWave
+{
+	margin-top: 148px;
+	opacity: 0.85;
+}
+
+#DAWave.Hidden
+{
+	opacity: 0;
+}
+
+#DAWaveLabel,
+#DANextItemLabel
+{
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #FFEFD780;
+	vertical-align: center;
+	margin-right: 8px;
+}
+
+#DAWaveTime
+{
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 14px;
+	font-weight: semi-bold;
+	color: #FFEFD7e6;
+	vertical-align: center;
+}
+
+#DAWave.Soon
+{
+	opacity: 1;
+}
+
+#DAWave.Soon #DAWaveTime
+{
+	color: #FFED79;
+}
+
+/* ---------- Next Quickbuy item: souls still needed, one quiet line above the wave line ---------- */
+
+#DANextItem
+{
+	margin-top: 120px;
+	max-width: 290px;
+	opacity: 0.85;
+}
+
+#DANextItem.Hidden
+{
+	opacity: 0;
+}
+
+#DANextItemName
+{
+	font-family: Radiance, Noto Sans, sans-serif;
+	font-size: 14px;
+	font-weight: semi-bold;
+	color: #FFEFD7e6;
+	vertical-align: center;
+	max-width: 160px;
+	text-overflow: ellipsis;
+	margin-right: 10px;
+}
+
+/* Souls amounts in the game's soul colour, like the souls counter. */
+#DANextItemNeed
+{
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 14px;
+	font-weight: semi-bold;
+	color: #99FFD6;
+	vertical-align: center;
+}
+
+/* "+1 READY": items earlier in the queue you can already afford. Only shown while counting
+   down to a later item. */
+#DANextItemReady
+{
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 11px;
+	text-transform: uppercase;
+	color: #69E799;
+	vertical-align: center;
+	margin-left: 10px;
+}
+
+#DANextItemReady.Hidden
+{
+	visibility: collapse;
+}
+
+#DANextItem.Ready
+{
+	opacity: 1;
+	background-color: #0B2A1Bb0;
+}
+
+#DANextItem.Ready #DANextItemNeed
+{
+	color: #69E799;
+}
+
+/* ---------- Hidden by the player (key, button or auto-hide) ---------- */
+
+#DATimers.DAUserHidden,
+#DAWave.DAUserHidden,
+#DANextItem.DAUserHidden,
+#DATimersBanner.DAUserHidden,
+#DAOptions.DAUserHidden,
+#DAMapMarkers.DAUserHidden
+{
+	visibility: collapse;
+}
+
+/* The only thing left while hidden: a faint chip, click it (or press the key) to show again. */
+#DAToggle
+{
+	margin-top: 148px;
+	padding: 2px 8px 2px 8px;
+	opacity: 0.45;
+}
+
+#DAToggle.Hidden
+{
+	visibility: collapse;
+}
+
+#DAToggle:hover
+{
+	opacity: 1;
+}
+
+#DAToggleText
+{
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 10px;
+	letter-spacing: 1px;
+	color: #FFEFD7b0;
+}
+
+/* ---------- Options panel (left of the timers) ---------- */
+
+#DAOptions
+{
+	horizontal-align: right;
+	vertical-align: top;
+	margin-top: 176px;
+	margin-right: 296px;
+	width: 290px;
+	flow-children: down;
+	padding: 8px 12px 10px 12px;
+	background-color: #000000c0;
+	world-blur: gaussian( 2, 2, 2 );
+	border-radius: 5px;
+}
+
+#DAOptions.Hidden
+{
+	visibility: collapse;
+}
+
+#DAOptionsTitle
+{
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #FFEFD799;
+	margin-bottom: 6px;
+}
+
+.DAOptRow
+{
+	width: 100%;
+	flow-children: right;
+	margin-top: 6px;
+}
+
+.DAOptName
+{
+	width: fill-parent-flow(1.0);
+	font-family: Radiance, Noto Sans, sans-serif;
+	font-size: 13px;
+	font-weight: semi-bold;
+	color: #FFEFD7e6;
+	vertical-align: center;
+}
+
+.DAOptBtn
+{
+	padding: 2px 8px 2px 8px;
+	background-color: #FFEFD714;
+	border-radius: 3px;
+	vertical-align: center;
+	transition-property: background-color;
+	transition-duration: 0.1s;
+}
+
+.DAOptBtn:hover
+{
+	background-color: #FFEFD733;
+}
+
+.DAOptBtn Label
+{
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 12px;
+	text-transform: uppercase;
+	color: #FFEFD7;
+	horizontal-align: center;
+}
+
+.DAOptWide
+{
+	min-width: 90px;
+}
+
+#DAMapSizeBar
+{
+	width: 80px;
+	height: 4px;
+	margin-left: 6px;
+	margin-right: 6px;
+	vertical-align: center;
+	background-color: #FFEFD726;
+	border-radius: 2px;
+}
+
+#DAMapSizeFill
+{
+	height: 100%;
+	width: 0%;
+	background-color: #FFEFD7;
+	border-radius: 2px;
+}
+
+#DAMapSizeValue
+{
+	width: 40px;
+	margin-left: 6px;
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 12px;
+	color: #FFEFD7e6;
+	text-align: right;
+	vertical-align: center;
+}
+
+/* ---------- Changes to the game's own minimap, switched by our classes ----------
+   The script puts DANoMapBackdrop on #minimap_persp and DAShowCrateIcons on #hud_minimap.
+   Only these two rules touch the game's panels, and only while those classes are on. */
+
+/* The grey round backdrop behind the map (compass frame + blur): hidden, so only the
+   playable areas of the map picture show. */
+.DANoMapBackdrop #minimap_frame
+{
+	opacity: 0;
+}
+
+/* The game places crate spawn icons on the minimap but keeps them at opacity 0. */
+.DAShowCrateIcons .map_button.powerup_spawn
+{
+	opacity: 0.7;
+}
+
+/* ---------- Crate markers on the minimap ----------
+   Small, dim diamonds placed just above the map picture, so hero and enemy icons draw on top.
+   They brighten in the last 30s before their crates spawn. */
+
+#DAMapMarkers
+{
+	/* Same level as the map picture (#MinimapBackgroundTest) and placed right after it, so it
+	   draws over the map but under every icon that comes later (all z-index 0 or more). */
+	z-index: 0;
+}
+
+#DAMapMarkers.Hidden
+{
+	visibility: collapse;
+}
+
+.DAMapMarker
+{
+	width: 6px;
+	height: 6px;
+	background-color: #FFEFD7;
+	border: 1px solid #10130Dc0;
+	opacity: 0.35;
+	transform: rotateZ( 45deg );
+	transition-property: opacity, background-color;
+	transition-duration: 0.3s;
+}
+
+.DAMapMarker.Soon
+{
+	opacity: 0.95;
+	background-color: #FFED79;
+}
+
+/* ---------- Warning banner: like the game's own announcements ----------
+   A plate in the game's announcement style (.CommsBanAnnouncement: coloured plate, 5px radius,
+   off-white border) with the block font, uppercase, a slight tilt and a strong shadow.
+   30s warning: dark plate, gold edges and text. 10s warning: the game's red plate (#931919ee).
+   Fixed 1100px width, centred at the top; long titles wrap onto a second line. overflow: noclip
+   everywhere, so the tilted text is never cut at the panel's edges. */
+#DATimersBanner
+{
+	width: 1100px;
+	horizontal-align: center;
+	vertical-align: top;
+	margin-top: 160px;
+	flow-children: down;
+	padding: 10px 36px 12px 36px;
+	background-color: #0B0D10e6;
+	border-top: 3px solid #FFED79;
+	border-bottom: 3px solid #FFED79;
+	border-radius: 5px;
+	box-shadow: 0px 0px 24px #000000c0;
+	overflow: noclip;
+	z-index: 10;
+	opacity: 0;
+	transform: translateY( -10px );
+	transition-property: opacity, transform;
+	transition-duration: 0.25s;
+}
+
+#DATimersBanner.Visible
+{
+	opacity: 1;
+	transform: translateY( 0px );
+}
+
+#DATimersBannerText
+{
+	width: 100%;
+	horizontal-align: center;
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 40px;
+	text-transform: uppercase;
+	color: #FFED79;
+	text-align: center;
+	overflow: noclip;
+	transform: rotateZ( -2deg );
+	text-shadow: 0px 2px 10px 2.0 #10130D;
+}
+
+#DATimersBannerTime
+{
+	width: 100%;
+	horizontal-align: center;
+	margin-top: 4px;
+	font-family: Radiance, Noto Sans, sans-serif;
+	font-size: 17px;
+	font-weight: bold;
+	text-transform: uppercase;
+	letter-spacing: 3px;
+	color: #FFEFD7;
+	text-align: center;
+	overflow: noclip;
+	text-shadow: 0px 0px 4px 1.0 #10130D;
+}
+
+/* 10 seconds left: the game's own red announcement plate. */
+#DATimersBanner.Urgent
+{
+	background-color: #931919ee;
+	border-top: 3px solid #FFEFD74d;
+	border-bottom: 3px solid #FFEFD74d;
+}
+
+#DATimersBanner.Urgent #DATimersBannerText,
+#DATimersBanner.Urgent #DATimersBannerTime
+{
+	color: #FFEFD7;
+}

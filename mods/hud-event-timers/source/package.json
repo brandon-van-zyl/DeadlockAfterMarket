@@ -1,0 +1,19 @@
+{
+  "name": "hud-event-timers",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test src/schedule.test.ts src/shop.test.ts src/minimap.test.ts src/match.test.ts src/sync.test.ts scripts/patch-hud.test.mjs scripts/panorama-to-html.test.mjs scripts/vpk.test.mjs scripts/gameinfo.test.mjs scripts/test-list.test.mjs scripts/snippet.test.mjs scripts/panorama-safe.test.mjs",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.preview.json",
+    "preview": "node scripts/preview.mjs",
+    "sim": "node scripts/simulate.mjs",
+    "extract": "node scripts/extract-panorama.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "deploy:install": "node scripts/deploy.mjs --install"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2"
+  }
+}

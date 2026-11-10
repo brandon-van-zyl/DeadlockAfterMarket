@@ -1,0 +1,28 @@
+# --- Valve / game files: never publish ----------------------------------------------
+# Exported or extracted game files (hud.xml, layouts, models, textures).
+**/vanilla/*
+!**/vanilla/README.txt
+**/extract/
+# Blender scenes built from extracted game models, and renders of them.
+*.blend
+*.blend1
+mods/nurse-harrow-reskin/source/reference/
+
+# --- Third-party programs -------------------------------------------------------------
+mods/_util/source2viewer/
+
+# --- Builds and releases (contain the compiled game HUD) ----------------------------------
+mods/*/build/*.vpk
+mods/*/source/content/
+releases/
+
+# --- Personal screenshots (can show match IDs) --------------------------------------------
+mods/*/images/*
+!mods/*/images/README.txt
+mods/*/source/preview/minimap.png
+mods/*/source/preview/fonts/*
+!mods/*/source/preview/fonts/README.txt
+
+# --- Tooling ------------------------------------------------------------------------------
+node_modules/
+.claude/

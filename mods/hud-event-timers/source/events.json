@@ -1,0 +1,84 @@
+{
+  "_comment": "Times are match-clock m:ss. Source: deadlockvault.net/map/timers (updated 3 Nov 2026). Recheck after patches. Events that respawn after being killed/broken (mid boss, crate respawns, camp respawns) can't be predicted from the clock, so only their first spawn is listed.",
+  "warnSeconds": [30, 10],
+  "showUpcoming": 4,
+  "lookaheadSeconds": 120,
+  "bannerSeconds": 4,
+  "match": {
+    "_comment": "Only run during a real match. The game puts its state on the HUD root as classes (seen in the F6 debugger: '... gamemode_standard GameStateInProgress' in a match). The hideout runs a clock too, so it's blocked, as are sandboxes, tutorials, hero testing and Street Brawl (different timings).",
+    "requireClasses": ["GameStateInProgress"],
+    "blockClasses": ["connectedToHideout", "InHideout", "connectedToHeroTesting", "connectedToHeroTraining", "connectedToNewPlayerSandbox", "connectedToTutorial", "gamemode_streetbrawl"]
+  },
+  "hide": {
+    "_comment": "Hide or show all of this mod's HUD with a key, or by clicking the panel title while your cursor is free (e.g. shop open). autoHideAt hides it once the clock reaches that time, e.g. \"30:00\" (null = never); press the key again to bring it back.",
+    "key": "key_F9",
+    "autoHideAt": null
+  },
+  "minimap": {
+    "_comment": "Map size and crate markers. Checked in the F6 debugger (Nov 2026): #HudMinimapContainer > <HudMinimap id='hud_minimap' class='HudMinimap ... invert_map'> > #MinimapBackgroundTest (the map picture, first real child), then every hero/boss/shop icon. 'scaleTarget' gets ui-scale for the map size setting: #minimap_persp, the bottom-right-pinned panel that holds the whole minimap (frame, blur and map), so it grows up and to the left. The scale is off while the game's big-map targeting or scoreboard view is open ('scaleOffWhen'). Markers go right after the map picture ('insert': 'after'), so every icon listed after it draws on top. The game mirrors #hud_minimap for team 2 (.invert_map) and resizes it for zoom, and markers inside it follow both. Points are % of the map (0-100, from the top-left, as the map looks when it is NOT inverted); place them with the preview's marker tool. 'kind' matches an event id so markers brighten 30s before that event. 'backdrop': false hides the game's grey round backdrop (#minimap_frame) so only the playable areas show; players can switch it in the options panel. While CRATE MARKERS is on, the game's own hidden crate spawn icons (.map_button.powerup_spawn, opacity 0 in vanilla) are shown too.",
+    "enabled": true,
+    "find": {
+      "scaleTarget": ["#minimap_persp", "#minimap_container"],
+      "minimap": ["#hud_minimap", ".HudMinimap"],
+      "mapLayer": ["#MinimapBackgroundTest", ".NewMinimapBackgroundsContainer"]
+    },
+    "backdrop": false,
+    "scale": { "default": 1.0, "min": 1.0, "max": 1.6, "step": 0.05, "scaleOffWhen": ["gMinimapTargeting", "gScoreboardOpen"] },
+    "quickSizes": {
+      "_comment": "One key (and the SMALL/BIG button under the map) switches between these two sizes. Key names follow Panorama's key_... style; empty to turn the key off.",
+      "key": "key_F8",
+      "sizes": [1.0, 1.4]
+    },
+    "markers": {
+      "enabled": true,
+      "insert": "after",
+      "soonSeconds": 30,
+      "showTypes": ["tough"],
+      "points": []
+    },
+    "flip": {
+      "_comment": "Team side. 'auto' turns the markers 180 degrees while one of 'whenFound' exists in the HUD, unless the markers already sit inside that mirrored panel (then the game flips them). .invert_map is the game's own class for this. Players can override it in the options panel.",
+      "mode": "auto",
+      "whenFound": [".invert_map"]
+    }
+  },
+  "waves": {
+    "_comment": "Trooper waves: a small countdown line, no banner. Each phase spawns every N seconds from its start. Source: deadlock.wiki/Trooper (30s, 25s after 20:00, 20s after 35:00). Counted from the game clock only, to the moment a wave SPAWNS at base (troopers leaving on the zipline), not when they land in lane (landing time changes through the game). firstWave is when the first wave spawns: 0:17, seen in a real match (Nov 2026; waves launched at :17 and :47 past each minute; guides say 0:00 but the game disagrees). After that each wave follows the previous one by the interval in force (30s, 25s from 20:00, 20s from 35:00). Re-check after patches.",
+    "enabled": true,
+    "label": "Wave",
+    "soonSeconds": 5,
+    "firstWave": "0:17",
+    "phases": [
+      { "from": "0:00", "every": 30 },
+      { "from": "20:00", "every": 25 },
+      { "from": "35:00", "every": 20 }
+    ]
+  },
+  "nextItem": {
+    "_comment": "Souls still needed for your Quickbuy queue. From the game's layouts (exported with Source 2 Viewer, Nov 2026): souls are Label #hudCurGoldLabel (text {i:hud_cur_gold}) in #CurrentGoldAmount; #hudGoldLabel is only the word 'Souls'. The game fills #QuickbuyQueue with CitadelHudQuickbuyEntry panels (class QuickbuyItem), each with Label #ModName and Label #ModCost. The next item to buy is its own entry, #QuickbuyNext; it decides the order (the list's panel order isn't buying order). The exact text format of the numbers still needs one in-game look; a --debug build logs it.",
+    "enabled": true,
+    "label": "Next",
+    "find": {
+      "souls": ["#hudCurGoldLabel"],
+      "queue": ["#QuickbuyQueue"],
+      "queueItem": [".QuickbuyItem"],
+      "itemName": ["#ModName"],
+      "itemCost": ["#ModCost"],
+      "next": ["#QuickbuyNext"]
+    },
+    "emptyWhen": ["Empty"]
+  },
+  "events": [
+    { "id": "small-camps", "label": "Small camps spawn", "first": "2:00" },
+    { "id": "crates", "label": "Crates & statues spawn", "first": "3:00" },
+    { "id": "snacks", "label": "Healing snacks spawn", "first": "3:00", "enabled": false },
+    { "id": "bridge-buffs", "label": "Bridge buffs", "first": "5:00", "every": 300 },
+    { "id": "medium-camps", "label": "Medium camps spawn", "first": "5:00" },
+    { "id": "tunnel-crates", "label": "Tunnel crates spawn", "first": "5:00" },
+    { "id": "large-camps", "label": "Large camps spawn", "first": "8:00" },
+    { "id": "sinners", "label": "Sinner's Sacrifice spawns", "first": "8:00" },
+    { "id": "urn", "label": "Soul Urn drops", "first": "10:00", "every": 300 },
+    { "id": "times-square-crates", "label": "Times Square crates", "first": "10:00" },
+    { "id": "rift", "label": "Unstable Rift", "first": "11:00", "approx": true }
+  ]
+}

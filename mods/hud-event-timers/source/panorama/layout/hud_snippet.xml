@@ -1,0 +1,64 @@
+<!-- Inserted into the game's hud.xml by scripts/build.mjs, just before </CitadelHud>. -->
+<Panel id="DATimers" class="Hidden" hittest="false">
+	<Panel id="DATimersHeader" hittest="false">
+		<Label id="DATimersTitle" text="NEXT EVENTS" hittest="false" />
+		<Button id="DAOptionsButton" class="DAOptBtn"><Label text="OPTIONS" hittest="false" /></Button>
+	</Panel>
+	<Panel id="DATimersRow0" class="DATimersRow Hidden" hittest="false">
+		<Label id="DATimersRow0Name" class="DATimersName" text="" hittest="false" />
+		<Label id="DATimersRow0Time" class="DATimersTime" text="" hittest="false" />
+	</Panel>
+	<Panel id="DATimersRow1" class="DATimersRow Hidden" hittest="false">
+		<Label id="DATimersRow1Name" class="DATimersName" text="" hittest="false" />
+		<Label id="DATimersRow1Time" class="DATimersTime" text="" hittest="false" />
+	</Panel>
+	<Panel id="DATimersRow2" class="DATimersRow Hidden" hittest="false">
+		<Label id="DATimersRow2Name" class="DATimersName" text="" hittest="false" />
+		<Label id="DATimersRow2Time" class="DATimersTime" text="" hittest="false" />
+	</Panel>
+	<Panel id="DATimersRow3" class="DATimersRow Hidden" hittest="false">
+		<Label id="DATimersRow3Name" class="DATimersName" text="" hittest="false" />
+		<Label id="DATimersRow3Time" class="DATimersTime" text="" hittest="false" />
+	</Panel>
+</Panel>
+<Panel id="DANextItem" class="Hidden" hittest="false">
+	<Label id="DANextItemLabel" text="NEXT" hittest="false" />
+	<Label id="DANextItemName" text="" hittest="false" />
+	<Label id="DANextItemNeed" text="" hittest="false" />
+	<Label id="DANextItemReady" class="Hidden" text="" hittest="false" />
+</Panel>
+<Panel id="DAWave" class="Hidden" hittest="false">
+	<Label id="DAWaveLabel" text="WAVE" hittest="false" />
+	<Label id="DAWaveTime" text="" hittest="false" />
+</Panel>
+<!-- Options: opened from OPTIONS on the panel title, while your cursor is free (shop open). -->
+<Panel id="DAOptions" class="Hidden" hittest="false">
+	<Label id="DAOptionsTitle" text="TIMER OPTIONS" hittest="false" />
+	<Panel class="DAOptRow" hittest="false">
+		<Label class="DAOptName" text="MAP SIZE" hittest="false" />
+		<Button id="DAMapSizeDown" class="DAOptBtn"><Label text="-" hittest="false" /></Button>
+		<Panel id="DAMapSizeBar" hittest="false"><Panel id="DAMapSizeFill" hittest="false" /></Panel>
+		<Button id="DAMapSizeUp" class="DAOptBtn"><Label text="+" hittest="false" /></Button>
+		<Label id="DAMapSizeValue" text="100%" hittest="false" />
+	</Panel>
+	<Panel class="DAOptRow" hittest="false">
+		<Label class="DAOptName" text="MAP BACKDROP" hittest="false" />
+		<Button id="DABackdropToggle" class="DAOptBtn DAOptWide"><Label id="DABackdropToggleText" text="OFF" hittest="false" /></Button>
+	</Panel>
+	<Panel class="DAOptRow" hittest="false">
+		<Label class="DAOptName" text="CRATE MARKERS" hittest="false" />
+		<Button id="DAMarkersToggle" class="DAOptBtn DAOptWide"><Label id="DAMarkersToggleText" text="ON" hittest="false" /></Button>
+	</Panel>
+	<Panel class="DAOptRow" hittest="false">
+		<Label class="DAOptName" text="TEAM SIDE FLIP" hittest="false" />
+		<Button id="DAFlipToggle" class="DAOptBtn DAOptWide"><Label id="DAFlipToggleText" text="AUTO" hittest="false" /></Button>
+	</Panel>
+	<Panel class="DAOptRow" hittest="false">
+		<Button id="DAHideButton" class="DAOptBtn DAOptWide"><Label text="HIDE TIMERS" hittest="false" /></Button>
+	</Panel>
+</Panel>
+<Button id="DAToggle" class="Hidden"><Label id="DAToggleText" text="TIMERS HIDDEN" hittest="false" /></Button>
+<Panel id="DATimersBanner" hittest="false">
+	<Label id="DATimersBannerText" text="" hittest="false" />
+	<Label id="DATimersBannerTime" text="" hittest="false" />
+</Panel>
