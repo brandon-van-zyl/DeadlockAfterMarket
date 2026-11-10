@@ -31,10 +31,16 @@ async function images() {
   }
 }
 
-/** Background screenshot: the first image in images/. */
+/**
+ * Background screenshot: preview/backdrop.jpg if it exists (a clean game scene made for the
+ * screenshots), otherwise the first image in images/.
+ */
 async function firstImage() {
+  try { await readFile(join(src, "preview", "backdrop.jpg")); return BACKDROP; } catch { /* none */ }
   return (await images())[0] ?? null;
 }
+const BACKDROP = "::backdrop";
+const imagePath = (name) => (name === BACKDROP ? join(src, "preview", "backdrop.jpg") : join(imagesDir, name));
 
 /**
  * Optional minimap picture for the fake minimap: preview/minimap.png (kept out of images/,
@@ -81,7 +87,7 @@ async function page() {
   ]);
   const bgInfo = [
     image
-      ? `Background: <code>images/${escapeHtml(image)}</code>.`
+      ? `Background: <code>${image === BACKDROP ? "preview/backdrop.jpg" : `images/${escapeHtml(image)}`}</code>.`
       : "No screenshot yet: add an in-game screenshot to <code>mods/hud-event-timers/images/</code> to preview over the real HUD.",
     fonts.length
       ? `Fonts: ${fonts.map((f) => `<code>${escapeHtml(f)}</code>`).join(", ")}.`
@@ -163,7 +169,8 @@ const server = createServer(async (req, res) => {
       case "/bg": {
         const image = await firstImage();
         if (!image) return send(404, "text/plain", "No image");
-        return send(200, IMAGE_TYPES[extname(image).toLowerCase()], await readFile(join(imagesDir, image)));
+        const file = imagePath(image);
+        return send(200, IMAGE_TYPES[extname(file).toLowerCase()], await readFile(file));
       }
       case "/minimap": {
         const image = await minimapImage();

@@ -41,7 +41,27 @@ try {
   if (saved) state = { ...state, ...JSON.parse(saved) };
 } catch { /* storage unavailable: use defaults */ }
 
+// --- Capture mode (for screenshots): ?capture=1&t=4:29&until=4:31&souls=2000&options=1 ----
+// Shows only the HUD at its real 1920x1080 size, plays from t to `until` so banners fire for
+// real, then pauses. Nothing is saved. Used by tools to take GameBanana screenshots.
+const params = new URLSearchParams(location.search);
+const capture = params.get("capture") === "1";
+const captureUntil = (() => { const u = params.get("until"); const m = u && /^(\d+):(\d{2})$/.exec(u); return m ? Number(m[1]) * 60 + Number(m[2]) : null; })();
+if (capture) {
+  document.body.classList.add("capture");
+  if (params.get("bg") === "0") document.body.classList.add("nobg");
+  const t = params.get("t"); const m = t && /^(\d+):(\d{2})$/.exec(t);
+  if (m) state.clock = Number(m[1]) * 60 + Number(m[2]);
+  if (params.get("souls")) state.souls = Number(params.get("souls"));
+  if (params.get("q")) state.queueIndex = Number(params.get("q"));
+  state.inMatch = true;
+  state.speed = 1;
+  state.playing = captureUntil !== null;
+  state.pauseOnBanner = false;
+}
+
 function save(): void {
+  if (capture) return;
   try { sessionStorage.setItem(STORE, JSON.stringify(state)); } catch { /* ignore */ }
 }
 
@@ -167,6 +187,7 @@ new MutationObserver(() => {
 const stage = $id<HTMLElement>("stage");
 const hud = $id<HTMLElement>("hud");
 function fit(): void {
+  if (capture) { hud.style.transform = "none"; return; } // real size for screenshots
   const s = Math.min(stage.clientWidth / 1920, stage.clientHeight / 1080);
   hud.style.transform = `scale(${s})`;
 }
@@ -180,6 +201,8 @@ function frame(): void {
   const now = performance.now();
   const dt = Math.min(1, (now - last) / 1000);
   last = now;
+  // Capture mode: once the target time is reached, freeze everything (banners stay up for the shot).
+  if (capture && captureUntil !== null && !state.playing && state.clock >= captureUntil) return;
   // While paused the scheduler keeps running at 1x (like the real HUD), the clock doesn't.
   let remaining = state.playing ? dt * state.speed : dt;
   while (remaining > 1e-9) {
@@ -187,6 +210,7 @@ function frame(): void {
     remaining -= step;
     if (state.playing) {
       state.clock = Math.min(MAX_CLOCK, state.clock + step);
+      if (captureUntil !== null && state.clock >= captureUntil) setPlaying(false);
       state.souls += step * SOULS_PER_SECOND;
       if (state.clock >= MAX_CLOCK) setPlaying(false);
     }
@@ -203,8 +227,18 @@ frame();
 setInterval(frame, 16);
 
 // --- Live reload ---------------------------------------------------------------
-const live = new EventSource("/live");
-live.addEventListener("reload", () => { save(); location.reload(); });
+// No live reload while capturing (an open connection would stall a headless screenshot).
+if (!capture) {
+  const live = new EventSource("/live");
+  live.addEventListener("reload", () => { save(); location.reload(); });
+}
+// Capture mode: open the options panel once the mod has wired up its buttons.
+if (capture && params.get("options") === "1") {
+  const open = setInterval(() => {
+    const b = document.getElementById("DAOptionsButton") as HTMLElement | null;
+    if (b?.onclick) { b.click(); clearInterval(open); }
+  }, 100);
+}
 
 // Surface script errors logged by the mod.
 setInterval(() => {

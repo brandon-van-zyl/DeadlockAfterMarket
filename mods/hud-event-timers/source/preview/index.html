@@ -87,6 +87,12 @@
     inset: 0; display: grid; place-items: center; color: #ffffff40; font-size: 28px; text-align: center;
   }
   #PreviewGameTime { display: none; }
+  /* Capture mode (?capture=1): only the HUD, at 1920x1080, top-left. */
+  body.capture #bar, body.capture #note, body.capture #error, body.capture #placeholder { display: none !important; }
+  body.capture { overflow: hidden; }
+  body.capture #stage { display: block; }
+  body.capture #hud { left: 0; top: 0; margin: 0; }
+  body.capture.nobg #hud { background: radial-gradient(ellipse at 50% 35%, #2b3240 0%, #14181e 55%, #0b0d11 100%) !important; }
   @media (max-width: 600px) { #bar { gap: 8px; } #slider { width: 100%; } }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">

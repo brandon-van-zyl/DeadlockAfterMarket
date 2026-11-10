@@ -149,7 +149,14 @@ by first spawn only.
      `game\citadel_addons`. The compiled files are `.vjs_c`, `.vcss_c` and `.vxml_c`.
    - Rename the VPK to `pak##_dir.vpk` (e.g. `pak40_dir.vpk`) and put it in
      `mods\hud-event-timers\build\`.
-5. **Package for GameBanana** from the repo root:
+5. **Screenshots for GameBanana:** with the preview running (`npm run preview`), run
+   `.\scripts\screenshots.ps1`. It loads the preview's capture mode in headless Edge at
+   1920x1080, plays the clock to each moment (so banners fire for real), and writes JPEGs to
+   `mods\hud-event-timers\images\`: `00-main-collage.jpg` (main image), `hud-overview.jpg`, both
+   banners, the top-right panels, the options panel and the minimap. It also converts any other
+   webp/png there to JPEG. If `preview\backdrop.jpg` exists (a game scene, kept out of git) it
+   is used behind the HUD; otherwise a plain dark background.
+6. **Package for GameBanana** from the repo root:
    ```
    .\tools\package.ps1 hud-event-timers
    ```

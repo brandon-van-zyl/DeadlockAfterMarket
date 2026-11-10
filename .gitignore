@@ -20,6 +20,7 @@ releases/
 mods/*/images/*
 !mods/*/images/README.txt
 mods/*/source/preview/minimap.png
+mods/*/source/preview/backdrop.jpg
 mods/*/source/preview/fonts/*
 !mods/*/source/preview/fonts/README.txt
 
