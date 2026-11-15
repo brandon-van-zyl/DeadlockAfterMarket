@@ -77,15 +77,20 @@ export interface MapSettings {
   flip: FlipMode;
   /** Show the game's grey round backdrop (#minimap_frame) behind the map. */
   backdrop: boolean;
+  /** Warning banners: the big plate, a slim one-line strip, or none. */
+  banner: BannerStyle;
 }
 
-export function defaultSettings(cfg: MinimapConfig): MapSettings {
-  return { mapScale: cfg.scale.default, markers: cfg.markers.enabled !== false, flip: cfg.flip.mode, backdrop: cfg.backdrop ?? false };
+export type BannerStyle = "full" | "small" | "off";
+export const BANNER_STYLES: BannerStyle[] = ["full", "small", "off"];
+
+export function defaultSettings(cfg: MinimapConfig, banner: BannerStyle = "full"): MapSettings {
+  return { mapScale: cfg.scale.default, markers: cfg.markers.enabled !== false, flip: cfg.flip.mode, backdrop: cfg.backdrop ?? false, banner };
 }
 
 /** Reads saved settings, ignoring anything missing or broken. */
-export function parseSettings(text: string | null | undefined, cfg: MinimapConfig): MapSettings {
-  const base = defaultSettings(cfg);
+export function parseSettings(text: string | null | undefined, cfg: MinimapConfig, banner: BannerStyle = "full"): MapSettings {
+  const base = defaultSettings(cfg, banner);
   if (!text) return base;
   try {
     const s = JSON.parse(text) as Partial<MapSettings>;
@@ -94,10 +99,16 @@ export function parseSettings(text: string | null | undefined, cfg: MinimapConfi
       markers: typeof s.markers === "boolean" ? s.markers : base.markers,
       flip: s.flip === "auto" || s.flip === "on" || s.flip === "off" ? s.flip : base.flip,
       backdrop: typeof s.backdrop === "boolean" ? s.backdrop : base.backdrop,
+      banner: BANNER_STYLES.includes(s.banner as BannerStyle) ? (s.banner as BannerStyle) : base.banner,
     };
   } catch {
     return base;
   }
+}
+
+/** The BANNERS button: full -> small -> off -> full. */
+export function nextBannerStyle(b: BannerStyle): BannerStyle {
+  return b === "full" ? "small" : b === "small" ? "off" : "full";
 }
 
 export function nextFlipMode(m: FlipMode): FlipMode {

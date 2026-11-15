@@ -4,6 +4,7 @@
   "showUpcoming": 4,
   "lookaheadSeconds": 120,
   "bannerSeconds": 4,
+  "bannerStyle": "full",
   "match": {
     "_comment": "Only run during a real match. The game puts its state on the HUD root as classes (seen in the F6 debugger: '... gamemode_standard GameStateInProgress' in a match). The hideout runs a clock too, so it's blocked, as are sandboxes, tutorials, hero testing and Street Brawl (different timings).",
     "requireClasses": ["GameStateInProgress"],

@@ -20,6 +20,8 @@
 		<Label id="DATimersRow3Name" class="DATimersName" text="" hittest="false" />
 		<Label id="DATimersRow3Time" class="DATimersTime" text="" hittest="false" />
 	</Panel>
+	<!-- BANNERS: SMALL - the warning as one line of text under the timers instead of the centre banner. -->
+	<Label id="DATimersAlert" class="Hidden" text="" hittest="false" />
 </Panel>
 <Panel id="DANextItem" class="Hidden" hittest="false">
 	<Label id="DANextItemLabel" text="NEXT" hittest="false" />
@@ -40,6 +42,10 @@
 		<Panel id="DAMapSizeBar" hittest="false"><Panel id="DAMapSizeFill" hittest="false" /></Panel>
 		<Button id="DAMapSizeUp" class="DAOptBtn"><Label text="+" hittest="false" /></Button>
 		<Label id="DAMapSizeValue" text="100%" hittest="false" />
+	</Panel>
+	<Panel class="DAOptRow" hittest="false">
+		<Label class="DAOptName" text="BANNERS" hittest="false" />
+		<Button id="DABannerToggle" class="DAOptBtn DAOptWide"><Label id="DABannerToggleText" text="FULL" hittest="false" /></Button>
 	</Panel>
 	<Panel class="DAOptRow" hittest="false">
 		<Label class="DAOptName" text="MAP BACKDROP" hittest="false" />

@@ -20,7 +20,8 @@ It only changes UI files: no memory reading, no injection.
   "+2 READY" count when you can already afford earlier items. Clears when you clear the queue.
 - **Minimap**: heavy (tough) crate markers that appear once crates spawn at 3:00, an optional
   grey-backdrop removal, and a bigger map on F8 (100% / 140%).
-- **Options** (click OPTIONS on the panel while the shop is open): map size, map backdrop,
+- **Options** (click OPTIONS on the panel while the shop is open): banners (FULL centre banner,
+  SMALL text line under the timers, or OFF), map size, map backdrop,
   crate markers, team-side flip, hide timers. **F9** hides or shows everything.
 - Only runs in real matches (not the hideout, sandbox or Street Brawl).
 
@@ -38,6 +39,10 @@ Manual: put the .vpk file into `Deadlock\game\citadel\addons` and make sure `gam
 loads addons (see INSTALL.txt in the download).
 
 ## Changelog
+
+### 1.1.0
+- New BANNERS option: FULL (the centre banner), SMALL (one quiet text line under the timers,
+  gold at 30s and red at 10s) or OFF. Requested by players who found the banner too big.
 
 ### 1.0.0
 - Next events panel, 30s/10s banners, trooper wave countdown, next Quickbuy item.

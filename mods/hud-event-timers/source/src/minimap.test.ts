@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
-  clampScale, effectiveScale, flipActive, locationPoints, markerStates, nextQuickSize, markerPosition, type MinimapConfig, nextFlipMode, parseSettings, soonKinds,
+  clampScale, effectiveScale, flipActive, locationPoints, markerStates, nextBannerStyle, nextQuickSize, markerPosition, type MinimapConfig, nextFlipMode, parseSettings, soonKinds,
   uiScaleValue, validateMinimap,
 } from "./minimap.ts";
 
@@ -91,11 +91,18 @@ test("flip modes", () => {
 });
 
 test("parseSettings keeps good saved values and ignores broken ones", () => {
-  const base = { mapScale: 1, markers: true, flip: "auto", backdrop: false };
+  const base = { mapScale: 1, markers: true, flip: "auto", backdrop: false, banner: "full" };
   assert.deepEqual(parseSettings(null, cfg), base);
-  assert.deepEqual(parseSettings('{"mapScale":1.32,"markers":false,"flip":"on","backdrop":true}', cfg), { mapScale: 1.3, markers: false, flip: "on", backdrop: true });
-  assert.deepEqual(parseSettings('{"mapScale":"big","flip":"sideways","backdrop":"yes"}', cfg), base);
+  assert.deepEqual(parseSettings('{"mapScale":1.32,"markers":false,"flip":"on","backdrop":true,"banner":"small"}', cfg), { mapScale: 1.3, markers: false, flip: "on", backdrop: true, banner: "small" });
+  assert.deepEqual(parseSettings('{"mapScale":"big","flip":"sideways","backdrop":"yes","banner":"huge"}', cfg), base);
   assert.deepEqual(parseSettings("not json", cfg), base);
+  assert.equal(parseSettings(null, cfg, "off").banner, "off"); // default from events.json
+});
+
+test("nextBannerStyle cycles full, small (text under the timers), off", () => {
+  assert.equal(nextBannerStyle("full"), "small");
+  assert.equal(nextBannerStyle("small"), "off");
+  assert.equal(nextBannerStyle("off"), "full");
 });
 
 test("shipped minimap config is valid", () => {

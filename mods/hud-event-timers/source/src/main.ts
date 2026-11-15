@@ -14,7 +14,7 @@ import { chooseClock, clockRestarted } from "./sync.ts";
 import {
   clampScale, defaultSettings, flipActive, type LocationData, locationPoints, type MapPoint, type MapSettings,
   markerLook, markerPosition, type MarkerState, markerStates, type MarkerType,
-  effectiveScale, nextFlipMode, nextQuickSize, parseSettings, soonKinds, uiScaleValue,
+  effectiveScale, nextBannerStyle, nextFlipMode, nextQuickSize, parseSettings, soonKinds, uiScaleValue,
 } from "./minimap.ts";
 
 const config = rawConfig as unknown as Config; // checked by validateConfig at build time
@@ -177,6 +177,7 @@ function setupClicks(): void {
     DAMarkersToggle: () => updateSettings({ markers: !mapSettings.markers }),
     DABackdropToggle: () => updateSettings({ backdrop: !mapSettings.backdrop }),
     DAFlipToggle: () => updateSettings({ flip: nextFlipMode(mapSettings.flip) }),
+    DABannerToggle: () => updateSettings({ banner: nextBannerStyle(mapSettings.banner) }),
   };
   const found = Object.keys(handlers).map((id) => [id, el(id)] as const);
   if (found.some(([, p]) => !p || !p.SetPanelEvent)) return;
@@ -194,7 +195,7 @@ function setupClicks(): void {
 
 const SETTINGS_KEY = "deadlock-aftermarket.event-timers.settings";
 const mm = config.minimap && config.minimap.enabled !== false ? config.minimap : null;
-let mapSettings: MapSettings = mm ? loadSettings(mm) : { mapScale: 1, markers: false, flip: "off", backdrop: true };
+let mapSettings: MapSettings = mm ? loadSettings(mm) : { mapScale: 1, markers: false, flip: "off", backdrop: true, banner: config.bannerStyle ?? "full" };
 let scalePanel: Panel | null = null;
 let minimapPanel: Panel | null = null;
 let mapLayer: Panel | null = null;
@@ -234,9 +235,9 @@ function storeSettings(json: string): void {
 
 function loadSettings(cfg: NonNullable<typeof mm>): MapSettings {
   try {
-    return parseSettings(readStoredSettings(), cfg);
+    return parseSettings(readStoredSettings(), cfg, config.bannerStyle ?? "full");
   } catch {
-    return defaultSettings(cfg);
+    return defaultSettings(cfg, config.bannerStyle ?? "full");
   }
 }
 
@@ -280,6 +281,7 @@ function renderOptions(): void {
   if (fill?.style) fill.style.width = pct;
   setText("DAMarkersToggleText", mapSettings.markers ? "ON" : "OFF");
   setText("DABackdropToggleText", mapSettings.backdrop ? "ON" : "OFF");
+  setText("DABannerToggleText", mapSettings.banner.toUpperCase());
   setText("DAFlipToggleText", mapSettings.flip.toUpperCase());
 }
 
@@ -496,16 +498,23 @@ function showBanner(b: Banner): void {
   setText("DATimersBannerText", b.title);
   setText("DATimersBannerTime", b.time);
   setClass("DATimersBanner", "Urgent", b.urgent);
+  // BANNERS: SMALL shows the same warning as one line of text under the timers panel.
+  setText("DATimersAlert", `${b.title}  ·  ${b.time}`);
+  setClass("DATimersAlert", "Urgent", b.urgent);
   bannerUntil = elapsed + config.bannerSeconds;
   applyBanner();
 }
 
 /**
- * Shows or hides the banner from bannerUntil. Called every tick, not from a one-off timer: if a
- * hide is ever missed (panel swapped, cache reset), the next tick puts it right.
+ * Shows or hides the warning from bannerUntil, in the chosen style: the centre banner (FULL),
+ * a text line under the timers (SMALL), or nothing (OFF). Called every tick, not from a one-off
+ * timer: if a hide is ever missed (panel swapped, cache reset), the next tick puts it right.
  */
 function applyBanner(): void {
-  setClass("DATimersBanner", "Visible", elapsed < bannerUntil && !userHidden && lastActive !== false);
+  const showing = elapsed < bannerUntil && !userHidden && lastActive !== false;
+  const style = mapSettings.banner;
+  setClass("DATimersBanner", "Visible", showing && style === "full");
+  setClass("DATimersAlert", "Hidden", !(showing && style === "small"));
 }
 
 /** The quiet wave line: just a countdown, brighter in the last few seconds, never a banner. */

@@ -152,6 +152,7 @@ test("validateConfig rejects mistakes", () => {
   assert.throws(() => validateConfig({ ...cfg, events: [{ id: "a", label: "A", first: "5 min" }] }), /Bad time/);
   assert.throws(() => validateConfig({ ...cfg, events: [cfg.events[0], cfg.events[0]] }), /Duplicate/);
   assert.throws(() => validateConfig({ ...cfg, showUpcoming: 9 }), /showUpcoming/);
+  assert.throws(() => validateConfig({ ...cfg, bannerStyle: "loud" as never }), /bannerStyle/);
   assert.throws(() => validateConfig({ ...cfg, waves: { ...waves, phases: [waves.phases[1], waves.phases[0]] } }), /time order/);
   assert.throws(() => validateConfig({ ...cfg, waves: { ...waves, phases: [{ from: "0:00", every: 0 }] } }), /every/);
 });

@@ -130,6 +130,14 @@ const fake: PanoramaGlobal = {
 
 (globalThis as unknown as { $: PanoramaGlobal }).$ = fake;
 
+// Capture mode: ?banner=small|off|full picks the warning style before the mod reads its settings.
+{
+  const banner = new URLSearchParams(location.search).get("banner");
+  if (banner === "small" || banner === "off" || banner === "full") {
+    try { localStorage.setItem("deadlock-aftermarket.event-timers.settings", JSON.stringify({ banner })); } catch { /* ignore */ }
+  }
+}
+
 /** Advances scheduler time by dt seconds, running due callbacks in order. */
 export function advance(dt: number): void {
   const target = runtime.time + dt;

@@ -37,6 +37,8 @@ A HUD panel that counts down to map events, plus a banner 30s and 10s before eac
   open). It has:
   - **Map size:** `-` / `+` scale the minimap from 100% to 160% in 5% steps. It grows away
     from its screen corner (`minimap.anchor`).
+  - **Banners:** `FULL` (the centre banner), `SMALL` (one quiet text line under the timers) or
+    `OFF`. The default is `bannerStyle` in `events.json`.
   - **Crate markers** on or off.
   - **Team side flip:** `AUTO` / `ON` / `OFF` (see below).
   - **Hide timers.**

@@ -28,6 +28,11 @@ export interface Config {
   lookaheadSeconds: number;
   /** How long a warning banner stays up, in seconds. */
   bannerSeconds: number;
+  /**
+   * Default warning style: "full" (centre banner), "small" (a text line under the timers
+   * panel) or "off". Players can switch it in the options panel.
+   */
+  bannerStyle?: "full" | "small" | "off";
   /** Trooper wave countdown (a small line, never a banner). */
   waves?: WaveConfig;
   /** Souls needed for the next Quickbuy item (a small line, never a banner). */
@@ -211,6 +216,9 @@ export function validateConfig(cfg: Config): void {
     if (ev.every !== undefined && !(ev.every > 0)) throw new Error(`"${ev.id}": every must be > 0 seconds`);
   }
   if (cfg.showUpcoming < 1 || cfg.showUpcoming > 4) throw new Error("showUpcoming must be 1 to 4");
+  if (cfg.bannerStyle !== undefined && !["full", "small", "off"].includes(cfg.bannerStyle)) {
+    throw new Error('bannerStyle must be "full", "small" or "off"');
+  }
   if (cfg.waves) {
     let prev = -Infinity;
     for (const p of cfg.waves.phases) {

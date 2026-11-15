@@ -105,6 +105,31 @@
 	color: #EE5945;
 }
 
+/* BANNERS: SMALL - the warning as a line of text under the timers instead of the centre banner. */
+#DATimersAlert
+{
+	width: 100%;
+	margin-top: 6px;
+	padding-top: 5px;
+	border-top: 1px solid #FFED7959;
+	font-family: VALVEPulp, Noto Sans;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #FFED79;
+}
+
+#DATimersAlert.Hidden
+{
+	visibility: collapse;
+}
+
+#DATimersAlert.Urgent
+{
+	color: #EE5945;
+	border-top: 1px solid #EE594599;
+}
+
 /* ---------- Shared look for the small one-line chips (wave, next item, hidden) ---------- */
 
 #DAWave,
