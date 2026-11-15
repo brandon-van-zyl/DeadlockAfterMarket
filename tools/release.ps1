@@ -52,14 +52,21 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Packaging failed." }
     $zip = Join-Path $root "releases\$Mod-v$Version.zip"
 
-    # 4. Commit, tag, push, GitHub Release
+    # 4. Commit, tag, push, GitHub Release. Git prints harmless warnings (e.g. line endings) on
+    # stderr, so judge each step by its exit code instead of by stderr output.
     $tag = "$Mod-v$Version"
-    git add $modFile
-    git commit -m "Release $title v$Version"
-    git tag $tag
-    git push
-    git push origin $tag
-    gh release create $tag $zip --title "$title v$Version" --notes $notes
+    $ErrorActionPreference = 'Continue'
+    function Step([string]$what, [scriptblock]$cmd) {
+        & $cmd 2>&1 | ForEach-Object { "$_" } | Where-Object { $_ -notmatch 'LF will be replaced by CRLF' }
+        if ($LASTEXITCODE -ne 0) { throw "$what failed." }
+    }
+    Step 'git add' { git add $modFile }
+    Step 'git commit' { git commit -m "Release $title v$Version" }
+    Step 'git tag' { git tag $tag }
+    Step 'git push' { git push }
+    Step 'git push tag' { git push origin $tag }
+    Step 'GitHub release' { gh release create $tag $zip --title "$title v$Version" --notes $notes }
+    $ErrorActionPreference = 'Stop'
     Write-Host "`nReleased $tag. Upload the same zip to GameBanana: $zip" -ForegroundColor Green
 }
 finally { Pop-Location }

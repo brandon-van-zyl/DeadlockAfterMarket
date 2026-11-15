@@ -1,5 +1,5 @@
 Title: Event Timers HUD
-Version: 1.0.0
+Version: 1.1.0
 Hero: none
 Category: HUD
 NSFW: no
